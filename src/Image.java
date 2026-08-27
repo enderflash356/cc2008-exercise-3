@@ -1,7 +1,4 @@
-/*
-* An image is a matrix of pixels.
-* Create getters and setters appropiately to get and set individual pixels.
-*/
+
 public class Image {
     private Pixel[][] pixels;
 
@@ -9,23 +6,19 @@ public class Image {
         this.pixels = new Pixel[height][width];
     }
 
-    public Image(Pixel[][] pixels) {
-        this.pixels = pixels;
-    }
-
     public int getHeight() {
-        return this.pixels.length;
+        return pixels.length;
     }
 
     public int getWidth() {
-        return this.pixels[0].length;
+        return pixels[0].length;
     }
 
     public Pixel getPixel(int row, int col) {
-        return this.pixels[row][col];
+        return pixels[row][col];
     }
 
-    public void setPixel(int row, int col, Pixel p) {
-        this.pixels[row][col] = p;
+    public void setPixel(int row, int col, Pixel pixel) {
+        this.pixels[row][col] = pixel;
     }
 }

@@ -4,70 +4,43 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ImageUtils {
-    public static Image load(String filename) {
-        try {
-            BufferedImage img = ImageIO.read(new File(filename));
-            if (img == null) {
-                return null;
-            }
-
-            int height = img.getHeight();
-            int width = img.getWidth();
-
-            // Create pixel matrix here with appropiate dimensions.
-            Pixel[][] pixels = new Pixel[height][width];
-
-            // loop over BufferedImage
-            for (int row = 0; row < height; row++) {
-                for (int col = 0; col < width; col++) {
-                    int packed = img.getRGB(col, row);
-                    int r = (packed >> 16) & 0xFF;
-                    int g = (packed >> 8) & 0xFF;
-                    int b = packed & 0xFF;
-                    pixels[row][col] = new Pixel(r, g, b);
-                }
-            }
-
-            return new Image(pixels);
-        } catch (IOException e) {
-            System.out.println("Couldn't open image at: '" + filename + "': " + e.getMessage());
-            return null;
+    public static Image load(String path)throws IOException {
+        BufferedImage img = ImageIO.read(new File(path));
+        if (img == null) {
+            throw new IOException("Could not load image: " + path);
         }
+        int w = img.getWidth();
+        int h = img.getHeight();
+        Image res = new Image(w, h);
+        for (int r = 0; r < h; r++) {
+            for (int c = 0; c < w; c++) {
+                int rgb = img.getRGB(c,r);
+                int red = (rgb >> 16) & 0xFF;
+                int green = (rgb >> 8) & 0xFF;
+                int blue = rgb & 0xFF;
+                res.setPixel(r, c, new Pixel(red, green, blue));
+            }
+        }
+        return res;
     }
 
-    public static void save(Image image, String filename) throws IOException {
+    public static void save(Image image, String path)throws IOException {
         BufferedImage img = toBufferedImage(image);
-
-        File file = new File(filename);
-        if (file.getParentFile() != null) {
-            file.getParentFile().mkdirs();
-        }
-
-        String format = "png";
-        int dot = filename.lastIndexOf('.');
-        if (dot != -1 && dot < filename.length() - 1) {
-            format = filename.substring(dot + 1).toLowerCase();
-        }
-
-        ImageIO.write(img, format, file);
+        String ext = path.substring(path.lastIndexOf(".") + 1);
+        ImageIO.write(img, ext, new File(path));
     }
 
     public static BufferedImage toBufferedImage(Image image) {
-        int height = image.getHeight();
-        int width = image.getWidth();
-
-        BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                Pixel pixel = image.getPixel(row, col);
-
-                int r = pixel.r & 0xFF;
-                int g = pixel.g & 0xFF;
-                int b = pixel.b & 0xFF;
-                output.setRGB(col, row, (r << 16) | (g << 8) | b);
+        int h = image.getHeight();
+        int w = image.getWidth();
+        BufferedImage res = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        for (int r = 0; r < h; r++) {
+            for (int c = 0; c < w; c++) {
+                Pixel p = image.getPixel(r, c);
+                int rgb = (p.r << 16) | (p.g << 8) | p.b;
+                res.setRGB(c,r, rgb);
             }
         }
-
-        return output;
+        return res;
     }
 }

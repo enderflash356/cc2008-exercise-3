@@ -1,16 +1,12 @@
-/*
-* The Pixel class represents an RGB pixel.
-* We use `int` as the data type to back up every
-* color channel.
-*/
+
 public class Pixel {
     public int r;
     public int g;
     public int b;
 
     public Pixel(int r, int g, int b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        this.r = Math.min(255, Math.max(0,r));
+        this.g = Math.min(255, Math.max(0,g));
+        this.b = Math.min(255, Math.max(0,r));
     }
 }
